@@ -39,19 +39,6 @@ class ImportController extends Controller
         return view('import.start');
     }
 
-    /*public function startProcessing()
-    {
-        try {
-            // Dispare o job para iniciar o processamento da fila
-            $rr = Artisan::call('queue:work --stop-when-empty', []);
-        } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->route('import.index')->with('danger', 'Opss!!! Algo inesperado aconteceu, tente novamente.');
-        }
-        
-        return redirect()->route('import.index')->with('success', 'Processamento da fila iniciado.');
-    }*/
-
     public function startProcessing()
     {
         try {
