@@ -14,14 +14,11 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('category_id');
+            $table->foreignId('category_id')
+                ->constrained('categories')
+                ->onDelete('cascade');
             $table->string('title', 60);
             $table->text('contents');
-
-            $table->foreign('category_id')
-                ->references('id')
-                ->on('categories')
-                ->onDelete('cascade');
         });
     }
 

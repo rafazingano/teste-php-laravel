@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ImportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ImportController::class, 'index'])->name('import.index');
+Route::post('/import', [ImportController::class, 'process'])->name('import.process');
+Route::get('/start-processing', [ImportController::class, 'start'])->name('import.start');
+Route::post('/start-processing', [ImportController::class, 'startProcessing'])->name('import.start.processing');
+
+
