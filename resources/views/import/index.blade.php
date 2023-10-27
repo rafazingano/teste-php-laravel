@@ -15,6 +15,9 @@
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-block">Enviar</button>
                 </div>
+                <div class="text-end">
+                    <a href="{{ route('import.start') }}" class="btn btn-link">Processamento da Fila</a>
+                </div>
             </form>
         </div>
     </div>

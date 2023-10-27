@@ -39,7 +39,7 @@ class ImportController extends Controller
         return view('import.start');
     }
 
-    public function startProcessing()
+    /*public function startProcessing()
     {
         try {
             // Dispare o job para iniciar o processamento da fila
@@ -50,5 +50,21 @@ class ImportController extends Controller
         }
         
         return redirect()->route('import.index')->with('success', 'Processamento da fila iniciado.');
+    }*/
+
+    public function startProcessing()
+    {
+        try {
+            // Dispare o job para iniciar o processamento da fila
+            $rr = Artisan::call('queue:work --stop-when-empty', []);
+
+            // Se o processo foi bem-sucedido, retorne uma resposta JSON
+            return response()->json(['message' => 'Processamento da fila finalizado com sucesso.']);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+
+            // Em caso de erro, retorne uma resposta JSON com status 500 (Erro Interno do Servidor)
+            return response()->json(['error' => 'Algo inesperado aconteceu, tente novamente.'], 500);
+        }
     }
 }
