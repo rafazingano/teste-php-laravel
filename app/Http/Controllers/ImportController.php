@@ -2,29 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ImportFileJob;
-use Illuminate\Http\Request;
+use App\Http\Requests\ImportFileRequest;
+use App\Services\ImportFileService;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 
 class ImportController extends Controller
 {
+
+    protected $importFileService;
+
+    public function __construct(ImportFileService $importFileService)
+    {
+        $this->importFileService = $importFileService;
+    }
+
     public function index()
     {
         return view('import.index');
     }
 
-    public function process(Request $request)
+    public function process(ImportFileRequest $request)
     {
-        // Valide o arquivo enviado
-        $request->validate([
-            'file' => 'required|file|mimes:json', // Ajuste os requisitos conforme necessário
-        ]);
-
-        // Salve o arquivo no armazenamento
-        $path = $request->file('file')->store('imported_files');
-
-        // Envie o trabalho para a fila
-        ImportFileJob::dispatch($path);
+        try {
+            $this->importFileService->generateJobs($request);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->route('import.index')->with('danger', 'Opss!!! Algo inesperado aconteceu, tente novamente.');
+        }
 
         return redirect()->route('import.index')->with('success', 'Arquivo enviado para processamento.');
     }
@@ -36,9 +41,14 @@ class ImportController extends Controller
 
     public function startProcessing()
     {
-        // Dispare o job para iniciar o processamento da fila
-        Artisan::call('queue:work');
-
+        try {
+            // Dispare o job para iniciar o processamento da fila
+            $rr = Artisan::call('queue:work --stop-when-empty', []);
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->route('import.index')->with('danger', 'Opss!!! Algo inesperado aconteceu, tente novamente.');
+        }
+        
         return redirect()->route('import.index')->with('success', 'Processamento da fila iniciado.');
     }
 }
